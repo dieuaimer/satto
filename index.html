@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주 풀이 & 행운의 로또 번호</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #d4af6a;
+    --gold-bright: #f3d98a;
+    --purple: #6a3fb5;
+    --purple-deep: #2a1550;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: radial-gradient(ellipse at 50% 20%, #1c0f3a 0%, #120a28 35%, #07040f 75%, #030208 100%);
+    color: #e8e0f5;
+    font-family: 'Noto Serif KR', serif;
+    overflow-x: hidden;
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 120px 80px, #fff, transparent),
+      radial-gradient(1px 1px at 200px 150px, #fff, transparent),
+      radial-gradient(2px 2px at 300px 60px, #ffe9b0, transparent),
+      radial-gradient(1px 1px at 400px 200px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 500px 40px, #fff, transparent),
+      radial-gradient(1px 1px at 600px 120px, #fff, transparent),
+      radial-gradient(2px 2px at 700px 180px, #ffe9b0, transparent),
+      radial-gradient(1px 1px at 80px 250px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 850px 90px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 900px 300px;
+    animation: twinkle 4s ease-in-out infinite alternate, drift 90s linear infinite;
+    opacity: 0.8;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  @keyframes drift {
+    from { background-position: 0 0; }
+    to { background-position: -900px 300px; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 20px 90px;
+    text-align: center;
+  }
+
+  .glyph {
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 12px rgba(212, 175, 106, 0.7));
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', 'Noto Serif KR', serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    margin: 0 0 8px;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, #a97e3a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 30px rgba(212, 175, 106, 0.35);
+  }
+
+  .subtitle {
+    color: #b6a8d9;
+    font-size: 0.92rem;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .disclaimer {
+    color: #7a6ea8;
+    font-size: 0.76rem;
+    margin-bottom: 34px;
+    line-height: 1.6;
+  }
+
+  .nav-link {
+    display: inline-block;
+    margin-bottom: 26px;
+    font-size: 0.82rem;
+    color: #cdbdf0;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(205, 189, 240, 0.5);
+    padding-bottom: 2px;
+    transition: color 0.2s ease;
+  }
+  .nav-link:hover { color: var(--gold-bright); }
+
+  .input-panel {
+    background: rgba(42, 21, 80, 0.3);
+    border: 1px solid rgba(212, 175, 106, 0.3);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px rgba(106, 63, 181, 0.2);
+  }
+
+  .input-panel label {
+    display: block;
+    font-size: 0.95rem;
+    color: #d8cdf0;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="date"] {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1.5px solid var(--gold);
+    background: #150c2e;
+    color: #f0e6c8;
+    outline: none;
+    color-scheme: dark;
+  }
+
+  .draw-btn {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 13px 34px;
+    border-radius: 30px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(180deg, #3a2166, #1a0f38);
+    color: var(--gold-bright);
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(106, 63, 181, 0.6), 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 18px;
+  }
+
+  .draw-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(243, 217, 138, 0.5), 0 6px 16px rgba(0,0,0,0.5);
+  }
+
+  .error-msg {
+    color: #f08a8a;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .result {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .result.show { opacity: 1; transform: translateY(0); }
+
+  .pillars {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+
+  .pillar-card {
+    width: 110px;
+    background: linear-gradient(160deg, #1a0f38 0%, #0f0824 100%);
+    border: 2px solid var(--gold-bright);
+    border-radius: 12px;
+    padding: 14px 8px;
+    box-shadow: 0 0 20px rgba(243, 217, 138, 0.3), inset 0 0 14px rgba(243, 217, 138, 0.1);
+  }
+
+  .pillar-label {
+    font-size: 0.75rem;
+    color: #b6a8d9;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .pillar-hanja {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    color: var(--gold-bright);
+    text-shadow: 0 0 10px rgba(243, 217, 138, 0.5);
+    line-height: 1.3;
+  }
+
+  .pillar-hangul {
+    font-size: 0.85rem;
+    color: #f0e6c8;
+    margin-top: 6px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold-bright);
+    letter-spacing: 1px;
+    margin: 30px 0 14px;
+  }
+
+  .elements-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .element-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .element-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: 2px solid var(--gold);
+    color: #0f0824;
+  }
+
+  .element-count {
+    font-size: 0.82rem;
+    color: #cdbdf0;
+  }
+
+  .el-목 { background: linear-gradient(160deg, #7fd88a, #2f8f4a); }
+  .el-화 { background: linear-gradient(160deg, #ff9d76, #d1462c); }
+  .el-토 { background: linear-gradient(160deg, #e0c07a, #a9822f); }
+  .el-금 { background: linear-gradient(160deg, #f0f0f0, #b8b8c0); }
+  .el-수 { background: linear-gradient(160deg, #8ec9ff, #2f5fa8); }
+
+  .interpretation {
+    text-align: left;
+    background: rgba(42, 21, 80, 0.35);
+    border: 1px solid rgba(212, 175, 106, 0.35);
+    border-radius: 14px;
+    padding: 22px 26px;
+    line-height: 1.85;
+    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(106, 63, 181, 0.25);
+    margin-bottom: 10px;
+  }
+
+  .interpretation b {
+    color: var(--gold-bright);
+  }
+
+  .lotto-section {
+    margin-top: 40px;
+  }
+
+  .lotto-balls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-height: 60px;
+    margin: 20px 0 10px;
+  }
+
+  .ball {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #1a1226;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.4);
+    opacity: 0;
+    transform: scale(0.3);
+    animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes pop-in {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .ball-yellow { background: linear-gradient(160deg, #ffe27a, #e0b030); }
+  .ball-blue { background: linear-gradient(160deg, #7ab3ff, #2f5fd8); color: #fff; }
+  .ball-red { background: linear-gradient(160deg, #ff8a7a, #d8402f); color: #fff; }
+  .ball-gray { background: linear-gradient(160deg, #b8b8c4, #6b6b78); color: #fff; }
+  .ball-green { background: linear-gradient(160deg, #8de08a, #2f9d4a); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding-bottom: 30px;
+    color: #6a5e93;
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 1.5rem; }
+    .pillar-card { width: 90px; }
+    .ball { width: 44px; height: 44px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<div class="container">
+  <div class="glyph">☯</div>
+  <h1>사주 풀이 & 행운의 로또</h1>
+  <p class="subtitle">생년월일 속에 새겨진 오행의 기운을 읽어드립니다</p>
+  <p class="disclaimer">※ 절기(입춘 등)를 반영하지 않은 간이 계산이며, 재미로 보는 콘텐츠입니다.</p>
+  <a class="nav-link" href="fortune.html">✦ 타로 카드 운세도 보러 가기</a>
+
+  <div class="input-panel">
+    <label for="birthdate">태어난 날을 알려주세요</label>
+    <input type="date" id="birthdate" min="1900-01-01" max="2100-12-31">
+    <br>
+    <button class="draw-btn" id="sajuBtn">✦ 사주 풀이 시작 ✦</button>
+    <div class="error-msg" id="errorMsg">생년월일을 올바르게 입력해 주세요.</div>
+  </div>
+
+  <div class="result" id="result">
+    <div class="pillars">
+      <div class="pillar-card">
+        <div class="pillar-label">년주 年柱</div>
+        <div class="pillar-hanja" id="yearHanja"></div>
+        <div class="pillar-hangul" id="yearHangul"></div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-label">월주 月柱</div>
+        <div class="pillar-hanja" id="monthHanja"></div>
+        <div class="pillar-hangul" id="monthHangul"></div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-label">일주 日柱</div>
+        <div class="pillar-hanja" id="dayHanja"></div>
+        <div class="pillar-hangul" id="dayHangul"></div>
+      </div>
+    </div>
+
+    <div class="section-title">오행(五行) 분포</div>
+    <div class="elements-row" id="elementsRow"></div>
+
+    <div class="section-title">사주 해석</div>
+    <div class="interpretation" id="interpretationText"></div>
+
+    <div class="lotto-section">
+      <div class="section-title">행운의 로또 번호</div>
+      <div class="lotto-balls" id="lottoBalls"></div>
+      <button class="draw-btn" id="lottoBtn">✦ 행운의 로또 번호 뽑기 ✦</button>
+    </div>
+  </div>
+</div>
+
+<footer>✦ 사주는 스스로를 이해하는 하나의 창일 뿐, 오늘의 선택은 언제나 당신의 몫입니다 ✦</footer>
+
+<script>
+const STEMS = ["갑","을","병","정","무","기","경","신","임","계"];
+const STEMS_HANJA = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const BRANCHES = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
+const BRANCHES_HANJA = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+
+const STEM_ELEMENT = ["목","목","화","화","토","토","금","금","수","수"];
+const BRANCH_ELEMENT = ["수","토","목","목","토","화","화","토","금","금","토","수"];
+
+const FIVE_TIGER_START = [2, 4, 6, 8, 0];
+
+const STEM_PERSONALITY = [
+  "갑(甲)의 기운을 타고났습니다. 곧고 진취적인 리더형으로, 자존심이 강하고 정직하며 앞장서기를 좋아합니다.",
+  "을(乙)의 기운을 타고났습니다. 유연하고 섬세한 외교형으로, 적응력이 뛰어나고 부드럽게 상황을 풀어갑니다.",
+  "병(丙)의 기운을 타고났습니다. 밝고 정열적인 태양형으로, 표현력이 풍부하고 주변에 활력을 불어넣습니다.",
+  "정(丁)의 기운을 타고났습니다. 따뜻하고 배려심 많은 촛불형으로, 은은하지만 꾸준한 열정을 지니고 있습니다.",
+  "무(戊)의 기운을 타고났습니다. 묵직하고 신뢰감 있는 대지형으로, 포용력이 크고 중심을 잘 잡습니다.",
+  "기(己)의 기운을 타고났습니다. 온화하고 실용적인 성격으로, 협조적이며 주변과 조화를 잘 이룹니다.",
+  "경(庚)의 기운을 타고났습니다. 강인하고 결단력 있는 칼날형으로, 원칙을 중시하고 추진력이 강합니다.",
+  "신(辛)의 기운을 타고났습니다. 예리하고 세련된 보석형으로, 완벽을 추구하며 섬세한 감각을 지녔습니다.",
+  "임(壬)의 기운을 타고났습니다. 지혜롭고 유연한 바다형으로, 통찰력이 뛰어나고 포용범위가 넓습니다.",
+  "계(癸)의 기운을 타고났습니다. 섬세하고 신비로운 이슬형으로, 감수성이 풍부하고 직관이 예리합니다."
+];
+
+const ELEMENT_ADVICE = {
+  "목": { excess: "목(木)의 기운이 강해 목표 지향적이고 성장 욕구가 크지만, 때로는 고집스러워 보일 수 있으니 유연함을 더해보세요.", deficiency: "목(木)의 기운이 부족하니 새로운 도전과 성장의 에너지를 의식적으로 채워보는 것이 좋습니다." },
+  "화": { excess: "화(火)의 기운이 강해 열정과 표현력이 넘치지만, 조급함은 경계할 필요가 있습니다.", deficiency: "화(火)의 기운이 부족하니 활력과 표현력을 끌어올릴 취미나 활동을 가까이 해보세요." },
+  "토": { excess: "토(土)의 기운이 강해 안정적이고 신뢰감 있지만, 변화에 대한 융통성도 함께 갖추면 좋습니다.", deficiency: "토(土)의 기운이 부족하니 삶의 중심을 잡아줄 루틴이나 안정적인 습관을 만들어보세요." },
+  "금": { excess: "금(金)의 기운이 강해 결단력과 원칙이 뚜렷하지만, 지나친 날카로움은 부드럽게 다듬어보세요.", deficiency: "금(金)의 기운이 부족하니 결단력과 원칙을 세우는 연습이 도움이 될 것입니다." },
+  "수": { excess: "수(水)의 기운이 강해 지혜롭고 사려 깊지만, 우유부단함으로 흐르지 않도록 주의하세요.", deficiency: "수(水)의 기운이 부족하니 유연한 사고와 깊이 있는 통찰을 기르는 시간이 필요합니다." }
+};
+
+function getYearPillar(year) {
+  const stemIndex = ((year - 4) % 10 + 10) % 10;
+  const branchIndex = ((year - 4) % 12 + 12) % 12;
+  return { stemIndex, branchIndex };
+}
+
+function getMonthPillar(month, yearStemIndex) {
+  const branchIndex = (month + 1) % 12;
+  const position = month - 1;
+  const startStem = FIVE_TIGER_START[yearStemIndex % 5];
+  const stemIndex = (startStem + position) % 10;
+  return { stemIndex, branchIndex };
+}
+
+function getDayPillar(year, month, day) {
+  const baseUTC = Date.UTC(1900, 0, 31);
+  const targetUTC = Date.UTC(year, month - 1, day);
+  const diffDays = Math.round((targetUTC - baseUTC) / 86400000);
+  const stemIndex = ((diffDays % 10) + 10) % 10;
+  const branchIndex = ((diffDays + 4) % 12 + 12) % 12;
+  return { stemIndex, branchIndex };
+}
+
+function pillarText(p) {
+  return {
+    hanja: STEMS_HANJA[p.stemIndex] + BRANCHES_HANJA[p.branchIndex],
+    hangul: STEMS[p.stemIndex] + BRANCHES[p.branchIndex]
+  };
+}
+
+function computeElements(year, month, day) {
+  const counts = { "목": 0, "화": 0, "토": 0, "금": 0, "수": 0 };
+  const yp = getYearPillar(year);
+  const mp = getMonthPillar(month, yp.stemIndex);
+  const dp = getDayPillar(year, month, day);
+  [yp, mp, dp].forEach(p => {
+    counts[STEM_ELEMENT[p.stemIndex]]++;
+    counts[BRANCH_ELEMENT[p.branchIndex]]++;
+  });
+  return { counts, yp, mp, dp };
+}
+
+function renderElements(counts) {
+  const row = document.getElementById('elementsRow');
+  row.innerHTML = '';
+  ["목", "화", "토", "금", "수"].forEach(el => {
+    const item = document.createElement('div');
+    item.className = 'element-item';
+    item.innerHTML = `
+      <div class="element-badge el-${el}">${el}</div>
+      <div class="element-count">${counts[el]}개</div>
+    `;
+    row.appendChild(item);
+  });
+}
+
+function renderInterpretation(counts, dayStemIndex) {
+  const personality = STEM_PERSONALITY[dayStemIndex];
+
+  let maxEl = "목", maxCount = -1;
+  let minEl = "목", minCount = 999;
+  ["목", "화", "토", "금", "수"].forEach(el => {
+    if (counts[el] > maxCount) { maxCount = counts[el]; maxEl = el; }
+    if (counts[el] < minCount) { minCount = counts[el]; minEl = el; }
+  });
+
+  let adviceHtml = `<p>${ELEMENT_ADVICE[maxEl].excess}</p>`;
+  if (minCount === 0 && minEl !== maxEl) {
+    adviceHtml += `<p>${ELEMENT_ADVICE[minEl].deficiency}</p>`;
+  }
+
+  document.getElementById('interpretationText').innerHTML =
+    `<p><b>일간(日干) 풀이</b><br>${personality}</p>${adviceHtml}`;
+}
+
+function validateDate(y, m, d) {
+  if (!y || !m || !d) return false;
+  if (y < 1900 || y > 2100) return false;
+  const daysInMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return m >= 1 && m <= 12 && d >= 1 && d <= daysInMonth;
+}
+
+function runSaju() {
+  const input = document.getElementById('birthdate').value;
+  const errorMsg = document.getElementById('errorMsg');
+  const result = document.getElementById('result');
+
+  if (!input) {
+    errorMsg.style.display = 'block';
+    result.classList.remove('show');
+    return;
+  }
+
+  const [y, m, d] = input.split('-').map(Number);
+
+  if (!validateDate(y, m, d)) {
+    errorMsg.style.display = 'block';
+    result.classList.remove('show');
+    return;
+  }
+
+  errorMsg.style.display = 'none';
+
+  const { counts, yp, mp, dp } = computeElements(y, m, d);
+
+  const yText = pillarText(yp);
+  const mText = pillarText(mp);
+  const dText = pillarText(dp);
+
+  document.getElementById('yearHanja').textContent = yText.hanja;
+  document.getElementById('yearHangul').textContent = yText.hangul;
+  document.getElementById('monthHanja').textContent = mText.hanja;
+  document.getElementById('monthHangul').textContent = mText.hangul;
+  document.getElementById('dayHanja').textContent = dText.hanja;
+  document.getElementById('dayHangul').textContent = dText.hangul;
+
+  renderElements(counts);
+  renderInterpretation(counts, dp.stemIndex);
+
+  document.getElementById('lottoBalls').innerHTML = '';
+
+  result.classList.remove('show');
+  void result.offsetWidth;
+  result.classList.add('show');
+}
+
+function ballColorClass(num) {
+  if (num <= 10) return 'ball-yellow';
+  if (num <= 20) return 'ball-blue';
+  if (num <= 30) return 'ball-red';
+  if (num <= 40) return 'ball-gray';
+  return 'ball-green';
+}
+
+function drawLotto() {
+  const pool = Array.from({ length: 45 }, (_, i) => i + 1);
+  const picked = [];
+  for (let i = 0; i < 6; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    picked.push(pool.splice(idx, 1)[0]);
+  }
+  picked.sort((a, b) => a - b);
+
+  const ballsEl = document.getElementById('lottoBalls');
+  ballsEl.innerHTML = '';
+  picked.forEach((num, i) => {
+    const ball = document.createElement('div');
+    ball.className = `ball ${ballColorClass(num)}`;
+    ball.style.animationDelay = `${i * 0.1}s`;
+    ball.textContent = num;
+    ballsEl.appendChild(ball);
+  });
+}
+
+document.getElementById('sajuBtn').addEventListener('click', runSaju);
+document.getElementById('lottoBtn').addEventListener('click', drawLotto);
+</script>
+
+</body>
+</html>
